@@ -23,7 +23,7 @@
 
 (defun dcl_TK (/ abbr n_zt n_pm n_zd n_cl n_hd n_jd) 
 
-  (setq dcl_id (load_dialog "E:\\Stupefy\\lisp\\TKsdy\\TK.dcl")) ;编译前删除路径
+  (setq dcl_id (load_dialog "E:\\Stupefy\\lisp\\TKp1\\TK.dcl")) ;编译前删除路径
   (new_dialog "TK" dcl_id)
   (action_tile "accept" "(ok_TK)(done_dialog 1)")
   (start_dialog)
@@ -48,7 +48,7 @@
                 baseTM_X ;;图名横向
                 baseTM_y ;;图名纵向
                 style ;;样式
-                base_x base_y target_x target_y obj_lst $tk i num x y text num_pic
+                base_x base_y target_x target_y tk_pm $tk i num x y text num_pic
                ) 
   ; 初始化参数
   (setq gap_pm     20
@@ -73,12 +73,13 @@
   (setvar "OSMODE" 0)
 
   ;标记复制前最后一个实体
-  (setq obj_lst (entlast))
+  (setq tk_pm (entlast))
+  
   (command "copy" tk "" (list base_x base_y) (list target_x target_y) "")
   ;;依次查找标记后实体存入新选择集
   (setq $tk (ssadd))
-  (while (setq obj_lst (entnext obj_lst)) 
-    (ssadd obj_lst $tk)
+  (while (setq tk_pm (entnext tk_pm)) 
+    (ssadd tk_pm $tk)
   )
   (command "copy" 
            $tk
