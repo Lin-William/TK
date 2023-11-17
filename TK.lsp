@@ -154,11 +154,14 @@
   )
   
   ; 纵断
-    (setq index 1)
+    (setq index 1
+          target_y (+ target_y 100)          
+    )
     (while (<= index n_zd ) 
-    (setq x (+ 225 target_x (* (+ 594 gap_zd) (- i 1))))
-    (setq y (+ 50 target_y))
-    (setq text (strcat village "配水管线纵断面图(" (itoa index) "/" (itoa n_zd) ")"))
+    (setq x (+ 225 target_x (* (+ 594 gap_zd) (- i 1)))
+          y (+ 50 target_y)
+          text (strcat village "配水管线纵断面图(" (itoa index) "/" (itoa n_zd) ")")
+    )
     (entmake 
       (list '(0 . "MTEXT") 
             '(100 . "AcDbEntity")
