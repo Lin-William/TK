@@ -1,14 +1,11 @@
-(princ "Author: William Lin - To Run Type : TK")
+(princ "Author: William Lin - To Run Type : YHTK")
 
-(defun c:tk (/ 
-             #myCmdEcho 
-             #myOsMode
-             ) 
-  
+(defun c:yhtk (/ #myCmdEcho #myOsMode) 
+
   (setq #myCmdEcho (getvar "CMDECHO")
-        #myOsMode (getvar "OSMODE")
-  ) 
-  
+        #myOsMode  (getvar "OSMODE")
+  )
+
   (defun *error* (msg) 
     (setvar "CMDECHO" #myCmdEcho)
     (setvar "OSMODE" #myOsMode)
@@ -16,89 +13,65 @@
     (princ msg)
     (princ)
   )
-  
-  
+
+
   (dcl_TK)
   (setvar "CMDECHO" #myCmdEcho)
   (setvar "OSMODE" #myOsMode)
   (prin1)
 )
 
-(defun dcl_TK(/ 
-              abbr
-              n_zt 
-              n_pm 
-              n_zd
-              n_cl
-              n_hd
-              n_jd              
-              )
-  
-  (setq dcl_id(load_dialog "E:\\Stupefy\\lisp\\TK\\TK.dcl"));编译前删除路径
+(defun dcl_TK (/ abbr n_zt n_pm n_zd n_cl n_hd n_jd) 
+
+  (setq dcl_id (load_dialog "E:\\Stupefy\\lisp\\TKsdy\\TK.dcl")) ;编译前删除路径
   (new_dialog "TK" dcl_id)
   (action_tile "accept" "(ok_TK)(done_dialog 1)")
   (start_dialog)
   (draw_tk)
 )
 
-(defun ok_TK()
-  (setq abbr (get_tile "kabbr")
-        n_zt (atoi (get_tile "kzt"))
-        n_pm (atoi (get_tile "kpm"))
-        n_zd (atoi (get_tile "kzd"))
-        n_cl (atoi (get_tile "kcl"))
-        n_hd (atoi (get_tile "khd"))
-        n_jd (atoi (get_tile "kjd"))
+(defun ok_TK () 
+  (setq abbr    (get_tile "kabbr")
+        n_zt    (atoi (get_tile "kzt"))
+        n_pm    (atoi (get_tile "kpm"))
+        n_zd    (atoi (get_tile "kzd"))
+        n_cl    (atoi (get_tile "kcl"))
+        n_hd    (atoi (get_tile "khd"))
+        n_jd    (atoi (get_tile "kjd"))
         village (get_tile "kname")
-        )
+  )
 )
 
-(defun draw_tk(            
-              /
-              tk 
-              pnt_base 
-              pnt_target
-              gap_pm     ;;间隔
-              baseTH_x   ;;图号横向
-              baseTH_y   ;;图号纵向
-              baseTM_X   ;;图名横向
-              baseTM_y   ;;图名纵向
-              style      ;;样式
-              base_x
-              base_y
-              target_x
-              target_y
-              obj_lst
-              $tk
-              i
-              num
-              x
-              y
-              text
-              num_pic
-              )
+(defun draw_tk (/ tk pnt_base pnt_target gap_pm ;;间隔
+                baseTH_x ;;图号横向
+                baseTH_y ;;图号纵向
+                baseTM_X ;;图名横向
+                baseTM_y ;;图名纵向
+                style ;;样式
+                base_x base_y target_x target_y obj_lst $tk i num x y text num_pic
+               ) 
   ; 初始化参数
-  (setq gap_pm   20       
-        baseTH_x 537.93   
-        baseTH_y 13.79    
-        baseTM_x 538.04  
-        baseTM_y 28.94   
-        style (itoa 4)
-        
-        tk (ssget)
-        pnt_base (getpoint "\n指一下图框左下角: ")
+  (setq gap_pm     20
+        gap_zd     10
+        baseTH_x   556.5
+        baseTH_y   13.5
+        baseTM_x   549
+        baseTM_y   34.5
+        style      (itoa 4)
+        tk         (ssget)
+        pnt_base   (getpoint "\n指一下图框左下角: ")
         pnt_target (getpoint "\n放哪儿: ")
-        
-        base_x   (nth 0 pnt_base)
-        base_y   (nth 1 pnt_base)
-        target_x (nth 0 pnt_target)
-        target_y (nth 1 pnt_target)
-        i 1
+        base_x     (nth 0 pnt_base)
+        base_y     (nth 1 pnt_base)
+        target_x   (nth 0 pnt_target)
+        target_y   (nth 1 pnt_target)
+        i          1
+        n_total    (+ n_pm n_zd n_cl n_hd n_jd) 
   )
-  
+
   (setvar "CMDECHO" 0)
   (setvar "OSMODE" 0)
-  
+
   ;标记复制前最后一个实体
   (setq obj_lst (entlast))
   (command "copy" tk "" (list base_x base_y) (list target_x target_y) "")
@@ -112,10 +85,12 @@
            ""
            (list target_x target_y)
            "A"
-           n_pm
+           n_total
            (list (+ 594 gap_pm target_x) target_y)
            ""
   )
+
+  ; 平面
   
   (while (<= i n_pm) 
     (setq num  (itoa i)
@@ -154,8 +129,8 @@
     )
 
     (if (< i 9) 
-      (setq num_pic (strcat "0" (itoa (+ i 1))))
-      (setq num_pic (itoa (+ i 1)))
+      (setq num_pic (strcat "0" (itoa (+ i n_zt))))
+      (setq num_pic (itoa (+ i n_zt)))
     )
 
     (setq x    (+ baseTH_x target_x (* (+ 594 gap_pm) (- i 1)))
@@ -178,4 +153,414 @@
     (setq i (+ i 1))
   )
   
+  ; 纵断
+    (setq index 1)
+    (while (<= index n_zd ) 
+    (setq x (+ 225 target_x (* (+ 594 gap_zd) (- i 1))))
+    (setq y (+ 50 target_y))
+    (setq text (strcat village "配水管线纵断面图(" (itoa index) "/" (itoa n_zd) ")"))
+    (entmake 
+      (list '(0 . "MTEXT") 
+            '(100 . "AcDbEntity")
+            '(100 . "AcDbMText")
+            (cons 7 style)
+            '(8 . "JustOneLastTime")
+            (cons 1 text)
+            (cons 10 (list x y 0))
+            (cons 40 7.5)
+      )
+    )
+    (setq x (+ baseTM_X target_x (* (+ 594 gap_zd) (- i 1))))
+    (setq y (+ baseTM_y target_y))
+    (entmake 
+      (list '(0 . "MTEXT") 
+            '(100 . "AcDbEntity")
+            '(100 . "AcDbMText")
+            (cons 7 style)
+            '(8 . "JustOneLastTime")
+            (cons 1 text)
+            (cons 10 (list x y 0))
+            (cons 40 4)
+            (cons 71 5)
+      )
+    )
+    (setq num_pic (+ i n_zt))
+    (if (< num_pic 10) 
+      (setq num_pic (strcat "0" (itoa num_pic)))
+      (setq num_pic (itoa num_pic))
+    )
+    (setq x (+ baseTH_x target_x (* (+ 594 gap_zd) (- i 1))))
+    (setq y (+ baseTH_y target_y))
+    (setq text (strcat abbr "-" num_pic))
+    (entmake 
+      (list '(0 . "MTEXT") 
+            '(100 . "AcDbEntity")
+            '(100 . "AcDbMText")
+            (cons 7 style)
+            '(8 . "JustOneLastTime")
+            (cons 1 text)
+            (cons 10 (list x y 0))
+            (cons 40 4)
+            (cons 71 5)
+      )
+    )
+    (setq i (+ i 1)
+          index (+ index 1)
+    )
+  )
+
+  ;材料
+  (setq index 1)
+  (cond 
+    ((= n_cl 1)
+     (progn 
+       (setq x    (+ 225 target_x (* (+ 594 gap_zd) (- i 1)))
+             y    (+ 50 target_y)
+             text (strcat village "配水管线主要材料表")
+       )
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 7.5)
+         )
+       )
+       (setq x (+ baseTM_X target_x (* (+ 594 gap_zd) (- i 1)))
+             y (+ baseTM_y target_y)
+       )
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 4)
+               (cons 71 5)
+         )
+       )
+       (setq num_pic (+ i n_zt))
+       (if (< num_pic 10) 
+         (setq num_pic (strcat "0" (itoa num_pic)))
+         (setq num_pic (itoa num_pic))
+       )
+       (setq x    (+ baseTH_x target_x (* (+ 594 gap_zd) (- i 1)))
+             y    (+ baseTH_y target_y)
+             text (strcat abbr "-" num_pic)
+       )
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 4)
+               (cons 71 5)
+         )
+       )
+       (setq i (+ i 1))
+     )
+    )
+    ((> n_cl 1)
+     (while (<= index n_cl) 
+       (setq x    (+ 225 target_x (* (+ 594 gap_zd) (- i 1)))
+             y    (+ 50 target_y)
+             text (strcat village "配水管线主要材料表(" (itoa index) "/" (itoa n_cl) ")")
+       )
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 7.5)
+         )
+       )
+       (setq x (+ baseTM_X target_x (* (+ 594 gap_zd) (- i 1))))
+       (setq y (+ baseTM_y target_y))
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 4)
+               (cons 71 5)
+         )
+       )
+       (setq num_pic (+ i n_zt))
+       (if (< num_pic 10) 
+         (setq num_pic (strcat "0" (itoa num_pic)))
+         (setq num_pic (itoa num_pic))
+       )
+       (setq x (+ baseTH_x target_x (* (+ 594 gap_zd) (- i 1))))
+       (setq y (+ baseTH_y target_y))
+       (setq text (strcat abbr "-" num_pic))
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 4)
+               (cons 71 5)
+         )
+       )
+       (setq i     (+ i 1)
+             index (+ index 1)
+       )
+     )
+    )
+  )
+  ;横断面
+  (setq index 1)
+  (cond 
+    ((= n_hd 0))
+    ((= n_hd 1)
+     (progn 
+       (setq x    (+ 225 target_x (* (+ 594 gap_zd) (- i 1)))
+             y    (+ 50 target_y)
+             text (strcat village "主要村道横断面图")
+       )
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 7.5)
+         )
+       )
+       (setq x (+ baseTM_X target_x (* (+ 594 gap_zd) (- i 1)))
+             y (+ baseTM_y target_y)
+       )
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 4)
+               (cons 71 5)
+         )
+       )
+       (setq num_pic (+ i n_zt))
+       (if (< num_pic 10) 
+         (setq num_pic (strcat "0" (itoa num_pic)))
+         (setq num_pic (itoa num_pic))
+       )
+       (setq x    (+ baseTH_x target_x (* (+ 594 gap_zd) (- i 1)))
+             y    (+ baseTH_y target_y)
+             text (strcat abbr "-" num_pic)
+       )
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 4)
+               (cons 71 5)
+         )
+       )
+       (setq i (+ i 1))
+     )
+    )
+    ((> n_hd 1)
+     (while (<= index n_hd) 
+       (setq x    (+ 225 target_x (* (+ 594 gap_zd) (- i 1)))
+             y    (+ 50 target_y)
+             text (strcat village "主要村道横断面图(" (itoa index) "/" (itoa n_hd) ")")
+       )
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 7.5)
+         )
+       )
+       (setq x (+ baseTM_X target_x (* (+ 594 gap_zd) (- i 1))))
+       (setq y (+ baseTM_y target_y))
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 4)
+               (cons 71 5)
+         )
+       )
+       (setq num_pic (+ i n_zt))
+       (if (< num_pic 10) 
+         (setq num_pic (strcat "0" (itoa num_pic)))
+         (setq num_pic (itoa num_pic))
+       )
+       (setq x (+ baseTH_x target_x (* (+ 594 gap_zd) (- i 1))))
+       (setq y (+ baseTH_y target_y))
+       (setq text (strcat abbr "-" num_pic))
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 4)
+               (cons 71 5)
+         )
+       )
+       (setq i     (+ i 1)
+             index (+ index 1)
+       )
+     )
+    )
+  )
+  ;节点坐标表
+  (setq index 1)
+  (cond 
+    ((= n_jd 0))
+    ((= n_jd 1)
+     (progn 
+       (setq x    (+ 225 target_x (* (+ 594 gap_zd) (- i 1)))
+             y    (+ 50 target_y)
+             text (strcat village "节点坐标表")
+       )
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 7.5)
+         )
+       )
+       (setq x (+ baseTM_X target_x (* (+ 594 gap_zd) (- i 1)))
+             y (+ baseTM_y target_y)
+       )
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 4)
+               (cons 71 5)
+         )
+       )
+       (setq num_pic (+ i n_zt))
+       (if (< num_pic 10) 
+         (setq num_pic (strcat "0" (itoa num_pic)))
+         (setq num_pic (itoa num_pic))
+       )
+       (setq x    (+ baseTH_x target_x (* (+ 594 gap_zd) (- i 1)))
+             y    (+ baseTH_y target_y)
+             text (strcat abbr "-" num_pic)
+       )
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 4)
+               (cons 71 5)
+         )
+       )
+       (setq i (+ i 1))
+     )
+    )
+    ((> n_jd 1)
+     (while (<= index n_jd) 
+       (setq x    (+ 225 target_x (* (+ 594 gap_zd) (- i 1)))
+             y    (+ 50 target_y)
+             text (strcat village "节点坐标表(" (itoa index) "/" (itoa n_jd) ")")
+       )
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 7.5)
+         )
+       )
+       (setq x (+ baseTM_X target_x (* (+ 594 gap_zd) (- i 1))))
+       (setq y (+ baseTM_y target_y))
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 4)
+               (cons 71 5)
+         )
+       )
+       (setq num_pic (+ i n_zt))
+       (if (< num_pic 10) 
+         (setq num_pic (strcat "0" (itoa num_pic)))
+         (setq num_pic (itoa num_pic))
+       )
+       (setq x (+ baseTH_x target_x (* (+ 594 gap_zd) (- i 1))))
+       (setq y (+ baseTH_y target_y))
+       (setq text (strcat abbr "-" num_pic))
+       (entmake 
+         (list '(0 . "MTEXT") 
+               '(100 . "AcDbEntity")
+               '(100 . "AcDbMText")
+               (cons 7 style)
+               '(8 . "JustOneLastTime")
+               (cons 1 text)
+               (cons 10 (list x y 0))
+               (cons 40 4)
+               (cons 71 5)
+         )
+       )
+       (setq i     (+ i 1)
+             index (+ index 1)
+       )
+     )
+    )
+  )
+
+  (setvar "CMDECHO" #myCMDECHO)
+  (setvar "OSMODE" #myOSMODE)
+  (prin1)
 )
