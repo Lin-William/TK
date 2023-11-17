@@ -70,8 +70,6 @@
         n_total    (+ n_pm n_zd n_cl n_hd n_jd) 
   )
 
-  (setvar "CMDECHO" 0)
-  (setvar "OSMODE" 0)
   ;;复制平面图框
   ;标记复制前最后一个实体
   (setq obj_lst (entlast))
@@ -97,10 +95,16 @@
   ;标记复制前最后一个实体
     
   (setq tk2 (ssget)
+        pnt_basezd   (getpoint "\n指一下图框左下角: ")
+        pnt_targetzd (getpoint "\n放哪儿: ")
+        base_xzd     (nth 0 pnt_basezd)
+        base_yzd     (nth 1 pnt_basezd)
+        target_xzd   (nth 0 pnt_targetzd)
+        target_yzd   (nth 1 pnt_targetzd)
         obj_lst (entlast)  
   )
   
-  (command "copy" tk2 "" (list base_x base_y) (list target_x (- target_y 420)) "")
+  (command "copy" tk2 "" (list base_xzd base_yzd) (list target_xzd target_yzd) "")
   ;;依次查找标记后实体存入新选择集
   (setq $tk (ssadd))
   (while (setq obj_lst (entnext obj_lst)) 
@@ -110,13 +114,15 @@
   (command "copy" 
            $tk
            ""
-           (list target_x target_y)
+           (list target_xzd target_yzd)
            "A"
            (- n_total n_pm)
-           (list (+ 594 gap_zd target_x) (- target_y 420))
+           (list (+ 594 gap_zd target_xzd) target_yzd)
            ""
   )
 
+  (setvar "CMDECHO" 0)
+  (setvar "OSMODE" 0)
    
   ; 平面
   
