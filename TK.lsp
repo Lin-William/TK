@@ -42,13 +42,14 @@
   )
 )
 
-(defun draw_tk (/ tk pnt_base pnt_target gap_pm ;;间隔
+(defun draw_tk (/ tk tk2 pnt_base pnt_target gap_pm ;;间隔
                 baseTH_x ;;图号横向
                 baseTH_y ;;图号纵向
                 baseTM_X ;;图名横向
                 baseTM_y ;;图名纵向
                 style ;;样式
-                base_x base_y target_x target_y tk_pm $tk i num x y text num_pic
+                base_x base_y target_x target_y obj_lst $tk i num x y text num_pic
+                tk_zd 
                ) 
   ; 初始化参数
   (setq gap_pm     20
@@ -71,26 +72,52 @@
 
   (setvar "CMDECHO" 0)
   (setvar "OSMODE" 0)
-
+  ;;复制平面图框
   ;标记复制前最后一个实体
-  (setq tk_pm (entlast))
+  (setq obj_lst (entlast))
   
   (command "copy" tk "" (list base_x base_y) (list target_x target_y) "")
   ;;依次查找标记后实体存入新选择集
   (setq $tk (ssadd))
-  (while (setq tk_pm (entnext tk_pm)) 
-    (ssadd tk_pm $tk)
+  (while (setq obj_lst (entnext obj_lst)) 
+    (ssadd obj_lst $tk)
   )
   (command "copy" 
            $tk
            ""
            (list target_x target_y)
            "A"
-           n_total
+           n_pm
            (list (+ 594 gap_pm target_x) target_y)
            ""
   )
+  
+  (print "框选纵断图框")
+  ;;复制纵断图框
+  ;标记复制前最后一个实体
+    
+  (setq tk2 (ssget)
+        obj_lst (entlast)  
+  )
+  
+  (command "copy" tk2 "" (list base_x base_y) (list target_x (- target_y 420)) "")
+  ;;依次查找标记后实体存入新选择集
+  (setq $tk (ssadd))
+  (while (setq obj_lst (entnext obj_lst)) 
+    (ssadd obj_lst $tk)
+  )
+  
+  (command "copy" 
+           $tk
+           ""
+           (list target_x target_y)
+           "A"
+           (- n_total n_pm)
+           (list (+ 594 gap_zd target_x) (- target_y 420))
+           ""
+  )
 
+   
   ; 平面
   
   (while (<= i n_pm) 
