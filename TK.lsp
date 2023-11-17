@@ -49,7 +49,7 @@
                 baseTM_y ;;图名纵向
                 style ;;样式
                 base_x base_y target_x target_y obj_lst $tk i num x y text num_pic
-                tk_zd 
+                tk_zd gap_zd
                ) 
   ; 初始化参数
   (setq gap_pm     20
@@ -86,7 +86,7 @@
            (list target_x target_y)
            "A"
            n_pm
-           (list (+ 594 gap_pm target_x) target_y)
+           (list (+ 594 target_x) target_y)
            ""
   )
   
