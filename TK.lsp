@@ -1,6 +1,6 @@
-(princ "Author: William Lin - To Run Type : YHTK")
+(princ "Author: William Lin - To Run Type : TK")
 
-(defun c:yhtk (/ #myCmdEcho #myOsMode) 
+(defun c:tk (/ #myCmdEcho #myOsMode) 
 
   (setq #myCmdEcho (getvar "CMDECHO")
         #myOsMode  (getvar "OSMODE")
@@ -69,6 +69,9 @@
         i          1
         n_total    (+ n_pm n_zd n_cl n_hd n_jd) 
   )
+  
+  (setvar "CMDECHO" 0)
+  (setvar "OSMODE" 0)
 
   ;;复制平面图框
   ;标记复制前最后一个实体
@@ -86,13 +89,16 @@
            (list target_x target_y)
            "A"
            n_pm
-           (list (+ 594 target_x) target_y)
+           (list (+ 594 gap_pm target_x) target_y)
            ""
   )
   
   (print "框选纵断图框")
   ;;复制纵断图框
   ;标记复制前最后一个实体
+  
+  (setvar "CMDECHO" #myCMDECHO)
+  (setvar "OSMODE" #myOSMODE)
     
   (setq tk2 (ssget)
         pnt_basezd   (getpoint "\n指一下图框左下角: ")
@@ -103,6 +109,9 @@
         target_yzd   (nth 1 pnt_targetzd)
         obj_lst (entlast)  
   )
+  
+  (setvar "CMDECHO" 0)
+  (setvar "OSMODE" 0)
   
   (command "copy" tk2 "" (list base_xzd base_yzd) (list target_xzd target_yzd) "")
   ;;依次查找标记后实体存入新选择集
@@ -120,10 +129,7 @@
            (list (+ 594 gap_zd target_xzd) target_yzd)
            ""
   )
-
-  (setvar "CMDECHO" 0)
-  (setvar "OSMODE" 0)
-   
+  
   ; 平面
   
   (while (<= i n_pm) 
