@@ -1,0 +1,12 @@
+;;; Visual LISP 生成文件 [V1.0] TKp1 saved to:[E:/Stupefy/lisp/TKp1] at:[11/20/23] 
+(PRV-DEF (:target . "TKp1.VLX")
+	 (:active-x . T)
+	 (:separate-namespace)
+	 (:protected . T)
+	 (:load-file-list (:lsp "TK.lsp"))
+	 (:require-file-list (:DCL "TK.dcl"))
+	 (:ob-directory)
+	 (:tmp-directory)
+	 (:optimization . lsa)
+)
+;; EOF
